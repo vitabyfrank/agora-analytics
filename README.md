@@ -1,6 +1,10 @@
 # Agora Analytics Plan Guide
 
-A customer-facing reference for choosing an Agora Analytics plan based on data retention, API access, analysis features, and integration needs.
+**Quality analytics for real-time voice, video, and live streaming.**
+
+A customer-facing reference for choosing an Agora Analytics plan based on data retention, API access, analysis features, and integration needs. The guide covers Agora-based Voice Calling, Video Calling, Interactive Live Streaming, and Broadcast Streaming scenarios described in the [product overview](https://docs.agora.io/en/realtime-media/agora-analytics/product-overview).
+
+Available metrics vary by SDK, platform, product, and feature. The plan and API tables do not imply coverage for unrelated external CDN delivery, VOD, or chat systems.
 
 The generated Korean guide is available in [`index.html`](./index.html). It is designed to work as a standalone file, including its font assets.
 

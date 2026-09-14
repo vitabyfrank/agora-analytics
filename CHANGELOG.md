@@ -2,6 +2,13 @@
 
 ## 2026-09-14
 
+### Voice, video, and streaming positioning / 음성·영상·스트리밍 포지셔닝
+
+- Broaden the customer introduction to Agora-based real-time voice, video, and live streaming.
+  고객 소개를 Agora 기반 실시간 음성·영상 통화와 라이브 스트리밍으로 확장했습니다.
+- Align Korean HTML and Korean/English documentation; retain official Call Inspector/API terms and all plan values.
+  HTML과 한·영 문서의 표현을 맞추고, 공식 기능·API 용어와 플랜 수치는 유지했습니다.
+
 ### Initial customer guide / 고객용 가이드 최초 등록
 
 - Add the Korean HTML guide with embedded Pretendard and a neutral color palette.

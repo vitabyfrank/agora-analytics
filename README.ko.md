@@ -1,6 +1,12 @@
 # Agora Analytics 플랜 가이드
 
-데이터 보존기간, API 제공 범위, 분석 기능과 연동 요구사항을 기준으로 Agora Analytics 플랜을 선택할 수 있도록 만든 고객용 자료입니다.
+**음성·영상 통화부터 라이브 스트리밍까지**
+
+서비스 품질을 확인하고 문제를 추적하세요.
+
+데이터 보존기간, API 제공 범위, 분석 기능과 연동 요구사항을 기준으로 Agora Analytics 플랜을 선택할 수 있도록 만든 고객용 자료입니다. [제품 개요](https://docs.agora.io/en/realtime-media/agora-analytics/product-overview)에 안내된 Agora 기반 Voice Calling, Video Calling, Interactive Live Streaming, Broadcast Streaming 시나리오를 다룹니다.
+
+제공 지표는 SDK, 플랫폼, 제품과 기능에 따라 다릅니다. 이 문서의 플랜·API 표는 별도의 외부 CDN 전송, VOD 또는 채팅 시스템까지 지원한다는 의미가 아닙니다.
 
 고객에게 공유할 한국어 가이드는 [`index.html`](./index.html)입니다. 폰트 자산을 포함한 단일 HTML 파일로도 사용할 수 있습니다.
 
