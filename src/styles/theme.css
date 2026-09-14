@@ -1,0 +1,402 @@
+/* Customer document: neutral palette and one Korean/Latin type family. */
+:root {
+  --ink:#242424;
+  --blue:#303030;
+  --line:#dedede;
+  --sky:#f0f0f0;
+  --canvas:#f7f7f7;
+  --muted:#606060;
+  --white:#fff;
+  --api-ink:#383838;
+  --api-bg:#f7f7f7
+}
+
+body {
+  font-family:'Pretendard Variable',sans-serif;
+  font-synthesis:none;
+  -webkit-font-smoothing:antialiased;
+  font-weight:400;
+  letter-spacing:-.012em;
+  line-height:1.7
+}
+
+.brand,.price,.plan h3,.capability strong,.comparison h3 small,.integration h3 {
+  font-family:inherit
+}
+
+h1,h2,h3 {
+  letter-spacing:-.025em;
+  font-weight:650
+}
+
+.hero h1 {
+  font-size:40px;
+  font-weight:650;
+  line-height:1.4;
+  letter-spacing:-.035em
+}
+
+h2 {
+  font-size:29px
+}
+
+.section-head p,.hero .intro {
+  font-weight:400
+}
+
+.hero .intro {
+  font-size:17px
+}
+
+.document-title strong {
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:-.015em
+}
+
+.top-links,.source,.muted,.tiny,.conditions,.table-help {
+  font-size:13px
+}
+
+.top-links a,.source {
+  color:#555
+}
+
+.source:hover {
+  color:#111
+}
+
+.button.primary {
+  background:#303030;
+  color:#fff
+}
+
+.button.secondary,.print {
+  border-color:#c9c9c9
+}
+
+.nav a {
+  font-size:14px
+}
+
+.nav a[aria-current="location"] {
+  color:#242424;
+  border-bottom-color:#242424;
+  font-weight:600
+}
+
+.jobs button[aria-selected="true"] {
+  background:#f2f2f2;
+  border-color:#d8d8d8;
+  font-weight:600
+}
+
+.scope {
+  background:#f0f0f0;
+  color:#444;
+  font-size:12px
+}
+
+.yes {
+  color:#333;
+  font-weight:600
+}
+
+.no {
+  color:#777
+}
+
+.confirm {
+  color:#555;
+  text-decoration:underline
+}
+
+.capability p,.integration p {
+  font-size:15px
+}
+
+.capability small {
+  font-size:12px;
+  color:#666
+}
+
+.callout,.retention-note {
+  border-left:2px solid #6b6b6b;
+  background:#f7f7f7
+}
+
+.comparison .example {
+  border-left-color:#bcbcbc
+}
+
+.example span {
+  color:#666
+}
+
+.history-hero {
+  background:#fafafa;
+  border-color:#d8d8d8;
+  border-radius:8px
+}
+
+.history-hero>h2 {
+  font-size:18px;
+  font-weight:600
+}
+
+.history-hero>p {
+  font-size:13px
+}
+
+.history-hero table {
+  font-size:13px
+}
+
+.history-hero tbody th {
+  font-size:13px;
+  font-weight:500
+}
+
+.history-hero tbody td {
+  font-size:24px;
+  font-weight:600;
+  font-variant-numeric:tabular-nums
+}
+
+.history-hero .api-row>* {
+  color:#383838
+}
+
+.history-hero td small {
+  font-size:14px;
+  font-weight:400
+}
+
+.table-scroll {
+  border-radius:7px
+}
+
+table {
+  font-size:14px;
+  line-height:1.65
+}
+
+thead th {
+  background:#f3f3f3;
+  font-weight:550;
+  color:#383838
+}
+
+tbody th {
+  font-weight:500;
+  color:#333
+}
+
+tbody td {
+  color:#555
+}
+
+.retention-matrix tbody th {
+  font-size:14px;
+  font-weight:500;
+  padding-block:17px
+}
+
+.retention-matrix tbody th small {
+  font-size:12px;
+  color:#666;
+  margin-top:5px;
+  font-weight:400
+}
+
+.retention-matrix tbody td b {
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:-.025em;
+  color:#242424
+}
+
+.retention-matrix tbody tr:nth-child(even)>* {
+  background:#f7f7f7
+}
+
+.retention-matrix tbody tr:nth-child(even) b,.retention-matrix tbody tr:nth-child(even) th {
+  color:#333
+}
+
+.retention-matrix .duration-unit {
+  font-size:14px;
+  font-weight:400;
+  margin-left:3px;
+  color:#666
+}
+
+.retention-note h3 {
+  font-size:16px;
+  font-weight:600
+}
+
+.retention-note p {
+  font-size:14px;
+  color:#555
+}
+
+.api-essential td b {
+  font-size:16px;
+  font-weight:600;
+  color:#333
+}
+
+.api-essential td small {
+  font-size:13px;
+  color:#666
+}
+
+.plan h3 {
+  font-size:17px;
+  font-weight:600
+}
+
+.price {
+  font-size:29px;
+  font-weight:600;
+  letter-spacing:-.03em
+}
+
+.plan>p,.plan .plan-note {
+  font-size:14px
+}
+
+.plan .plan-note b {
+  font-size:16px;
+  font-weight:600
+}
+
+.route b {
+  border-color:#ccc
+}
+
+.route span {
+  color:#666
+}
+
+.footer {
+  color:#666
+}
+
+@media(max-width:700px) {
+  .hero h1 {
+  font-size:31px
+}
+
+.hero .intro {
+  font-size:16px
+}
+
+h2 {
+  font-size:25px
+}
+
+.nav a {
+  font-size:13px
+}
+
+.retention-matrix tbody th {
+  font-size:13px
+}
+
+.retention-matrix tbody td b {
+  font-size:21px
+}
+
+.plan>p,.plan .plan-note {
+  font-size:13px
+}
+
+.source,.muted,.conditions {
+  font-size:12px
+}
+
+.top-links {
+  font-size:12px
+}
+
+
+}
+
+@media print {
+  body {
+  font-family:'Pretendard Variable',sans-serif
+}
+
+.hero h1 {
+  font-size:24pt
+}
+
+h2 {
+  font-size:19pt
+}
+
+.hero .intro {
+  font-size:10pt
+}
+
+.retention-matrix tbody th {
+  font-size:9pt;
+  padding-block:10px
+}
+
+.retention-matrix tbody th small {
+  font-size:8pt
+}
+
+.retention-matrix tbody td b {
+  font-size:15pt
+}
+
+.retention-matrix .duration-unit {
+  font-size:9pt
+}
+
+.source,.muted,.conditions,.retention-note p {
+  font-size:8.5pt
+}
+
+.history-hero tbody td {
+  font-size:17pt
+}
+
+.history-hero tbody th {
+  font-size:9pt
+}
+
+.history-hero>p {
+  font-size:8.5pt
+}
+
+.capability p,.integration p {
+  font-size:9pt
+}
+
+table {
+  font-size:8.5pt
+}
+
+.api-essential td b {
+  font-size:10pt
+}
+
+.api-essential td small {
+  font-size:8pt
+}
+
+.plan>p,.plan .plan-note {
+  font-size:9pt
+}
+
+.price {
+  font-size:21pt
+}
+
+
+}
