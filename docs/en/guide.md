@@ -2,7 +2,13 @@
 
 Verified on: **2026-09-14**
 
-This guide compares Agora Analytics plans based on customer requirements for data retention, analysis, and integration. It does not recommend a plan based on price or tier name alone.
+**Quality analytics for real-time voice, video, and live streaming.**
+
+This guide compares Agora Analytics plans based on customer requirements for data retention, analysis, and integration. It covers Agora-based Voice Calling, Video Calling, Interactive Live Streaming, and Broadcast Streaming scenarios described in the [product overview](https://docs.agora.io/en/realtime-media/agora-analytics/product-overview). It does not recommend a plan based on price or tier name alone.
+
+Available metrics vary by SDK, platform, product, and feature. The plan and API tables in this guide do not imply coverage for unrelated external CDN delivery, VOD, or chat systems.
+
+In customer-facing explanations, **service session** is a descriptive umbrella for a user's call or live-streaming experience. It does not replace the specific meanings of call, API session, user, and channel in Agora Console and API fields.
 
 > Product prices and entitlements can change. Before a final proposal, confirm the customer's contract, enabled features, and the latest official documentation.
 
@@ -10,7 +16,7 @@ This guide compares Agora Analytics plans based on customer requirements for dat
 
 Four questions usually determine the right plan:
 
-1. How long must individual call details and aggregated data remain available?
+1. How long must individual call details and aggregated service data remain available?
 2. Will users work in the Console, or must data be collected through REST APIs?
 3. Is live operational monitoring or retrospective trend analysis more important?
 4. Does the team need to narrow issues by country, device, or SDK version, or integrate with Datadog?
@@ -19,8 +25,8 @@ Four questions usually determine the right plan:
 
 | Plan | Monthly price (USD) | Best fit |
 | --- | ---: | --- |
-| Starter | $0 | Basic call analysis and product evaluation |
-| Standard | $449 | Longer investigation history and basic usage and quality analytics |
+| Starter | $0 | Basic call analysis and product evaluation for a real-time service |
+| Standard | $449 | Longer call investigation history and basic service usage and quality analytics |
 | Premium | $999 | Advanced comparisons, Alerts, Datadog, and Data Insights and Monitoring APIs |
 | Enterprise | $1,599 | The longest Console retention and larger API history and quotas |
 
@@ -68,13 +74,13 @@ Sources: [Agora Analytics plans and pricing](https://docs.agora.io/en/realtime-m
 | Capability | Role | Problem addressed | Customer value | Example |
 | --- | --- | --- | --- | --- |
 | Call Inspector | Inspect users, events, sender-receiver paths, and quality metrics for an individual call | A reported call issue is difficult to reproduce from the customer's description | Narrows the investigation and reduces support time | Search for a reported call and identify the affected user and time range |
-| Data Insights | Aggregate usage and quality trends over time | Individual calls do not reveal recurring service-wide patterns | Supports operations and product decisions with trend data | Review hourly or daily join success and freeze-rate trends |
-| Data Insights Plus | Segment data with dimensions, samples, and comparative analysis | Affected countries, devices, or SDK versions are hidden by overall averages | Narrows the affected population and finds calls to investigate | Observe quality by SDK version and drill into related calls |
-| Real-time Monitoring | Observe recent conditions with short-interval aggregates | An operational issue may be missed while waiting for retrospective reports | Detects an active issue sooner | Watch recent channel, user, and quality changes |
+| Data Insights | Aggregate usage and quality trends over time | Individual calls do not reveal recurring patterns across a voice, video, or live-streaming service | Supports operations and product decisions with trend data | Review hourly or daily join success and freeze-rate trends across the service |
+| Data Insights Plus | Segment data with dimensions, samples, and comparative analysis | Affected countries, devices, or SDK versions are hidden by overall values | Narrows the affected population and finds calls to investigate | Observe quality by SDK version and drill into supported related calls |
+| Real-time Monitoring | Observe recent conditions with short-interval aggregates | An operational issue in a calling or live-streaming service may be missed while waiting for retrospective reports | Detects an active issue sooner | Watch recent channel, user, and quality changes during service operation |
 | Alerts | Notify email, WeCom, or an HTTP callback when thresholds or predefined events occur | Operators must otherwise watch the Console continuously | Starts the response workflow sooner | Notify a team channel when join success declines |
 | Embedding | Display supported Analytics pages in a customer portal through an iframe | Operators switch between multiple consoles | Brings supported analysis into the team's existing workflow | Open call search inside a support portal |
-| REST API | Retrieve call, aggregate, and real-time data from a customer server | A customer needs its own portal, storage, or data processing | Integrates analytics with customer-owned systems | Add recent calls to a support tool and retain the response data |
-| Datadog integration | Send App ID-level RTC aggregate metrics to Datadog | RTC and infrastructure signals are separated across monitoring tools | Places service and RTC conditions on the same timeline | Compare server incidents with changes in join success |
+| REST API | Retrieve supported call, aggregate, and real-time data from a customer server | A customer needs its own portal, storage, or data processing | Integrates analytics with customer-owned systems | Add the call list and supported service aggregates to an operations tool |
+| Datadog integration | Send App ID-level RTC aggregate metrics to Datadog | Voice, video, or live-streaming RTC signals and infrastructure signals are separated across monitoring tools | Places service and RTC conditions on the same timeline | Compare server incidents with changes in join success |
 
 Overview: [Agora Analytics product overview](https://docs.agora.io/en/realtime-media/agora-analytics/product-overview)
 
