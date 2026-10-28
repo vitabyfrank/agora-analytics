@@ -170,8 +170,8 @@ def main() -> int:
     ):
         if required_text not in english_text:
             errors.append(f"The English view is missing required content: {required_text}")
-    if "searchParams.set('lang', 'en')" not in html or "localStorage" not in html:
-        errors.append("Language selection must support ?lang=en and persist locally.")
+    if "searchParams.set('lang', 'en')" not in html:
+        errors.append("Language selection must support ?lang=en.")
     if "window.addEventListener('popstate'" not in html or "url.hash = '#' +" not in html:
         errors.append("Language selection must remap anchors and handle browser history.")
     for required_value in ("$449", "$999", "$1,599", "3 days", "7 days", "14 days", "30 days", "60-day retention", "90-day retention"):

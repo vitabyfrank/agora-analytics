@@ -327,7 +327,7 @@ const languageMeta = {
   ko: {title: 'Agora Analytics 플랜 비교 가이드', description: 'Agora 기반 실시간 음성·영상 통화와 라이브 스트리밍의 품질 분석, 플랜별 보존기간과 REST API 조건을 비교합니다.'},
   en: {title: 'Agora Analytics Plan Comparison Guide', description: 'Compare Agora Analytics quality capabilities, plan retention periods, and REST API conditions for real-time voice, video, and live streaming.'}
 };
-function setLanguage(language, {persist=true, historyMode='replace', focusControl=false}={}) {
+function setLanguage(language, {historyMode='replace', focusControl=false}={}) {
   if (!languageMeta[language]) language = 'ko';
   const previousView = languageViews.find(view => !view.hidden);
   const nextView = languageViews.find(view => view.dataset.language === language);
@@ -348,7 +348,6 @@ function setLanguage(language, {persist=true, historyMode='replace', focusContro
   document.documentElement.lang = language;
   document.title = languageMeta[language].title;
   document.querySelector('meta[name="description"]').content = languageMeta[language].description;
-  if (persist) { try { localStorage.setItem('agora-analytics-language', language); } catch (_) {} }
   const url = new URL(location.href);
   if (language === 'en') url.searchParams.set('lang', 'en'); else url.searchParams.delete('lang');
   const baseHash = url.hash.slice(1).replace(/^en-/, '');
@@ -361,9 +360,7 @@ function setLanguage(language, {persist=true, historyMode='replace', focusContro
 }
 languageButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.setLanguage, {historyMode:'push', focusControl:true})));
 const requestedLanguage = new URLSearchParams(location.search).get('lang');
-let savedLanguage = 'ko';
-try { savedLanguage = localStorage.getItem('agora-analytics-language') || 'ko'; } catch (_) {}
-setLanguage(requestedLanguage === 'en' || requestedLanguage === 'ko' ? requestedLanguage : savedLanguage, {persist:false});
+setLanguage(requestedLanguage === 'en' ? 'en' : 'ko');
 const initialHash = location.hash.slice(1).replace(/^en-/, '');
 if (initialHash) {
   const visibleLanguage = document.documentElement.lang;
@@ -373,7 +370,7 @@ if (initialHash) {
 }
 window.addEventListener('popstate', () => {
   const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ko';
-  setLanguage(language, {persist:false, historyMode:null});
+  setLanguage(language, {historyMode:null});
   const baseHash = location.hash.slice(1).replace(/^en-/, '');
   const target = document.getElementById((language === 'en' ? 'en-' : '') + baseHash);
   target?.scrollIntoView();
