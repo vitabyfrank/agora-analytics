@@ -33,7 +33,7 @@ Do not edit `index.html` directly. Update `src/` and rebuild so that the output 
 4. Apply the same facts and limitations to `docs/ko/guide.md` and `docs/en/guide.md`.
 5. Compare meaning, numbers, conditions, and links across languages instead of translating sentence by sentence.
 6. Regenerate and check the HTML.
-7. Review both languages at the default URL and `?lang=en`, including desktop, mobile, keyboard navigation, language persistence, deep links, and print output.
+7. Review both languages at the default URL and `?lang=en`, including desktop, mobile, keyboard navigation, Korean default regardless of past selections, deep links, and print output.
 8. Record the change and validation results in the pull request.
 
 ## Source audit
