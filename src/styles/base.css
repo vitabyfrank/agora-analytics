@@ -114,6 +114,42 @@ p {
   text-decoration:none
 }
 
+.language-switch {
+  display:inline-flex;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:3px;
+  background:#fff
+}
+
+.language-switch button {
+  appearance:none;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  padding:7px 10px;
+  cursor:pointer
+}
+
+.language-switch button[aria-pressed="true"] {
+  background:var(--ink);
+  color:#fff
+}
+
+.language-switch button:focus-visible {
+  outline:3px solid var(--blue-soft);
+  outline-offset:2px
+}
+
+[data-language][hidden] {
+  display:none!important
+}
+
 .print {
   border:1px solid #c3c3c3;
   background:#fff;

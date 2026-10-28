@@ -6,7 +6,7 @@ A customer-facing reference for choosing an Agora Analytics plan based on data r
 
 Available metrics vary by SDK, platform, product, and feature. The plan and API tables do not imply coverage for unrelated external CDN delivery, VOD, or chat systems.
 
-The generated Korean guide is available in [`index.html`](./index.html). It is designed to work as a standalone file, including its font assets.
+The generated bilingual guide is available in [`index.html`](./index.html). Use the 한국어 / English control in the header, or open `?lang=en` directly. The language choice persists in the browser. The guide works as a standalone file, including its font assets.
 
 ## Documentation
 
