@@ -685,6 +685,10 @@ details[open] summary span {
   letter-spacing:0
 }
 
+[data-language="en"] .comparison h3 small {
+  display:none
+}
+
 .comparison p {
   font-size:14px;
   color:var(--muted)
@@ -1542,7 +1546,8 @@ summary {
 @media(max-width:700px) {
   .document-title {
   display:block;
-  min-width:0
+  min-width:0;
+  flex-basis:100%
 }
 
 .document-title strong {
@@ -1556,11 +1561,15 @@ summary {
 }
 
 .top {
-  gap:14px
+  gap:10px;
+  flex-wrap:wrap
 }
 
 .top-links {
-  flex-shrink:0
+  flex-shrink:0;
+  width:100%;
+  gap:12px;
+  justify-content:flex-start
 }
 
 .print {

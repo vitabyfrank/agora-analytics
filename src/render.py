@@ -314,6 +314,7 @@ translator.feed(raw_ko_body)
 if translator.unmapped:
     raise ValueError('Missing English translations:\n- ' + '\n- '.join(sorted(translator.unmapped)))
 en_body = ''.join(translator.output)
+en_body = re.sub(r'<b>1<span class="duration-unit">\s*days</span></b>', '<b>1<span class="duration-unit"> day</span></b>', en_body)
 ko_switch = '<div class="language-switch" role="group" aria-label="언어 선택"><button type="button" data-set-language="ko" aria-pressed="true">한국어</button><button type="button" data-set-language="en" aria-pressed="false">English</button></div>'
 en_switch = '<div class="language-switch" role="group" aria-label="Language"><button type="button" data-set-language="ko" aria-pressed="false">Korean</button><button type="button" data-set-language="en" aria-pressed="true">English</button></div>'
 ko_body = raw_ko_body.replace('<div class="top-links">', '<div class="top-links">' + ko_switch, 1)
@@ -326,7 +327,7 @@ const languageMeta = {
   ko: {title: 'Agora Analytics 플랜 비교 가이드', description: 'Agora 기반 실시간 음성·영상 통화와 라이브 스트리밍의 품질 분석, 플랜별 보존기간과 REST API 조건을 비교합니다.'},
   en: {title: 'Agora Analytics Plan Comparison Guide', description: 'Compare Agora Analytics quality capabilities, plan retention periods, and REST API conditions for real-time voice, video, and live streaming.'}
 };
-function setLanguage(language, persist=true) {
+function setLanguage(language, {persist=true, historyMode='replace', focusControl=false}={}) {
   if (!languageMeta[language]) language = 'ko';
   const previousView = languageViews.find(view => !view.hidden);
   const nextView = languageViews.find(view => view.dataset.language === language);
@@ -350,14 +351,19 @@ function setLanguage(language, persist=true) {
   if (persist) { try { localStorage.setItem('agora-analytics-language', language); } catch (_) {} }
   const url = new URL(location.href);
   if (language === 'en') url.searchParams.set('lang', 'en'); else url.searchParams.delete('lang');
-  try { history.replaceState(null, '', url); } catch (_) {}
+  const baseHash = url.hash.slice(1).replace(/^en-/, '');
+  if (baseHash) url.hash = '#' + (language === 'en' ? 'en-' : '') + baseHash;
+  if (historyMode) {
+    try { history[historyMode + 'State']({language}, '', url); } catch (_) {}
+  }
   updateNav();
+  if (focusControl) nextView?.querySelector(`[data-set-language="${language}"]`)?.focus();
 }
-languageButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.setLanguage)));
+languageButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.setLanguage, {historyMode:'push', focusControl:true})));
 const requestedLanguage = new URLSearchParams(location.search).get('lang');
 let savedLanguage = 'ko';
 try { savedLanguage = localStorage.getItem('agora-analytics-language') || 'ko'; } catch (_) {}
-setLanguage(requestedLanguage === 'en' || requestedLanguage === 'ko' ? requestedLanguage : savedLanguage, false);
+setLanguage(requestedLanguage === 'en' || requestedLanguage === 'ko' ? requestedLanguage : savedLanguage, {persist:false});
 const initialHash = location.hash.slice(1).replace(/^en-/, '');
 if (initialHash) {
   const visibleLanguage = document.documentElement.lang;
@@ -365,5 +371,12 @@ if (initialHash) {
   if (target?.tagName === 'DETAILS') target.open = true;
   target?.scrollIntoView();
 }
+window.addEventListener('popstate', () => {
+  const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ko';
+  setLanguage(language, {persist:false, historyMode:null});
+  const baseHash = location.hash.slice(1).replace(/^en-/, '');
+  const target = document.getElementById((language === 'en' ? 'en-' : '') + baseHash);
+  target?.scrollIntoView();
+});
 </script>'''
 html = html[:body_start] + '<div data-language="ko">' + ko_body + '</div><div data-language="en" hidden>' + en_body + '</div>' + original_script.replace("document.getElementById('print-page').addEventListener('click', () => window.print());", "document.querySelectorAll('.print').forEach(button => button.addEventListener('click', () => window.print()));").replace("const directTarget = document.getElementById(location.hash.slice(1));", "const directTarget = document.getElementById(location.hash.slice(1));") + language_script + '</body></html>'
