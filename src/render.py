@@ -4,8 +4,11 @@ from pathlib import Path
 from html import escape
 import base64
 import re
+import runpy
+from html.parser import HTMLParser
 
 ROOT = Path(__file__).resolve().parents[1]
+TRANSLATIONS = runpy.run_path(str(ROOT / 'src/translations_en.py'))['TRANSLATIONS']
 BASE = 'https://docs.agora.io/en/realtime-media/agora-analytics/'
 URL = {
  'overview':BASE+'product-overview', 'pricing':BASE+'reference/pricing',
@@ -186,7 +189,8 @@ parts.append('''<script>
 document.documentElement.classList.add('js');
 const jobTabs = [...document.querySelectorAll('[data-job]')];
 function selectJob(tab, focus=false) {
-  jobTabs.forEach(item => {
+  const viewTabs = [...tab.closest('[data-language]').querySelectorAll('[data-job]')];
+  viewTabs.forEach(item => {
     const active = item === tab;
     item.setAttribute('aria-selected', String(active));
     item.tabIndex = active ? 0 : -1;
@@ -194,18 +198,23 @@ function selectJob(tab, focus=false) {
   });
   if (focus) tab.focus();
 }
-jobTabs.forEach((tab, index) => {
+jobTabs.forEach(tab => {
   tab.addEventListener('click', () => selectJob(tab));
   tab.addEventListener('keydown', event => {
+    const viewTabs = [...tab.closest('[data-language]').querySelectorAll('[data-job]')];
+    const index = viewTabs.indexOf(tab);
     let next;
-    if (['ArrowRight','ArrowDown'].includes(event.key)) next = (index + 1) % jobTabs.length;
-    if (['ArrowLeft','ArrowUp'].includes(event.key)) next = (index - 1 + jobTabs.length) % jobTabs.length;
+    if (['ArrowRight','ArrowDown'].includes(event.key)) next = (index + 1) % viewTabs.length;
+    if (['ArrowLeft','ArrowUp'].includes(event.key)) next = (index - 1 + viewTabs.length) % viewTabs.length;
     if (event.key === 'Home') next = 0;
-    if (event.key === 'End') next = jobTabs.length - 1;
-    if (next !== undefined) { event.preventDefault(); selectJob(jobTabs[next], true); }
+    if (event.key === 'End') next = viewTabs.length - 1;
+    if (next !== undefined) { event.preventDefault(); selectJob(viewTabs[next], true); }
   });
 });
-selectJob(jobTabs[0]);
+document.querySelectorAll('[data-language]').forEach(view => {
+  const firstTab = view.querySelector('[data-job]');
+  if (firstTab) selectJob(firstTab);
+});
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', () => {
     const target = document.getElementById(link.hash.slice(1));
@@ -224,10 +233,11 @@ window.addEventListener('afterprint', () => {
   closedDetails.forEach(item => item.open = false);
   closedDetails = [];
 });
-const sections = [...document.querySelectorAll('main > section')];
-const navLinks = [...document.querySelectorAll('.nav a')];
 let scrollPending = false;
 function updateNav() {
+  const currentView = document.querySelector('[data-language]:not([hidden])');
+  const sections = [...currentView.querySelectorAll('main > section')];
+  const navLinks = [...currentView.querySelectorAll('.nav a')];
   let active = sections[0];
   sections.forEach(section => { if (section.getBoundingClientRect().top <= 160) active = section; });
   navLinks.forEach(a => {
@@ -252,3 +262,121 @@ theme_css=(ROOT/'src/styles/theme.css').read_text()
 license_text=(assets/'OFL.txt').read_text().replace('--','—')
 html=html.replace('</head>','<style>'+font_css+theme_css+'</style><!-- Embedded font license\n'+license_text+'\n--></head>')
 html=re.sub(r'<b>(\d+)일</b>',r'<b>\1<span class="duration-unit">일</span></b>',html)
+
+
+class EnglishRenderer(HTMLParser):
+    """Translate the complete Korean DOM while preserving its structure and behavior."""
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.output = []
+        self.unmapped = set()
+
+    def translated(self, value):
+        if not re.search(r'[가-힣]', value):
+            return value
+        stripped = value.strip()
+        translation = TRANSLATIONS.get(stripped)
+        if translation is None:
+            self.unmapped.add(stripped)
+            return value
+        return value[:len(value) - len(value.lstrip())] + translation + value[len(value.rstrip()):]
+
+    def handle_starttag(self, tag, attrs):
+        rendered = []
+        for key, value in attrs:
+            if value is None:
+                rendered.append(key); continue
+            if key == 'id':
+                value = 'en-' + value
+            elif key in ('aria-controls', 'aria-labelledby'):
+                value = ' '.join('en-' + item for item in value.split())
+            elif key == 'href' and value.startswith('#'):
+                value = '#en-' + value[1:]
+            value = self.translated(value)
+            rendered.append(f'{key}="{escape(value, quote=True)}"')
+        self.output.append('<' + tag + ((' ' + ' '.join(rendered)) if rendered else '') + '>')
+
+    def handle_endtag(self, tag): self.output.append(f'</{tag}>')
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        self.output[-1] = self.output[-1][:-1] + '/>'
+    def handle_data(self, data): self.output.append(self.translated(data))
+    def handle_entityref(self, name): self.output.append(f'&{name};')
+    def handle_charref(self, name): self.output.append(f'&#{name};')
+    def handle_comment(self, data): self.output.append(f'<!--{data}-->')
+
+
+script_start = html.index('<script>')
+body_start = html.index('<body>') + len('<body>')
+raw_ko_body = html[body_start:script_start]
+translator = EnglishRenderer()
+translator.feed(raw_ko_body)
+if translator.unmapped:
+    raise ValueError('Missing English translations:\n- ' + '\n- '.join(sorted(translator.unmapped)))
+en_body = ''.join(translator.output)
+en_body = re.sub(r'<b>1<span class="duration-unit">\s*days</span></b>', '<b>1<span class="duration-unit"> day</span></b>', en_body)
+ko_switch = '<div class="language-switch" role="group" aria-label="언어 선택"><button type="button" data-set-language="ko" aria-pressed="true">한국어</button><button type="button" data-set-language="en" aria-pressed="false">English</button></div>'
+en_switch = '<div class="language-switch" role="group" aria-label="Language"><button type="button" data-set-language="ko" aria-pressed="false">Korean</button><button type="button" data-set-language="en" aria-pressed="true">English</button></div>'
+ko_body = raw_ko_body.replace('<div class="top-links">', '<div class="top-links">' + ko_switch, 1)
+en_body = en_body.replace('<div class="top-links">', '<div class="top-links">' + en_switch, 1)
+original_script = html[script_start:html.index('</body>')]
+language_script = '''<script>
+const languageViews = [...document.querySelectorAll('[data-language]')];
+const languageButtons = [...document.querySelectorAll('[data-set-language]')];
+const languageMeta = {
+  ko: {title: 'Agora Analytics 플랜 비교 가이드', description: 'Agora 기반 실시간 음성·영상 통화와 라이브 스트리밍의 품질 분석, 플랜별 보존기간과 REST API 조건을 비교합니다.'},
+  en: {title: 'Agora Analytics Plan Comparison Guide', description: 'Compare Agora Analytics quality capabilities, plan retention periods, and REST API conditions for real-time voice, video, and live streaming.'}
+};
+function setLanguage(language, {persist=true, historyMode='replace', focusControl=false}={}) {
+  if (!languageMeta[language]) language = 'ko';
+  const previousView = languageViews.find(view => !view.hidden);
+  const nextView = languageViews.find(view => view.dataset.language === language);
+  if (previousView && nextView && previousView !== nextView) {
+    const selectedTab = previousView.querySelector('[data-job][aria-selected="true"]');
+    if (selectedTab) {
+      const job = selectedTab.dataset.job;
+      nextView.querySelector(`[data-job="${job}"]`)?.click();
+    }
+    const previousDetails = [...previousView.querySelectorAll('details')];
+    const nextDetails = [...nextView.querySelectorAll('details')];
+    previousDetails.forEach((detail, index) => {
+      if (nextDetails[index]) nextDetails[index].open = detail.open;
+    });
+  }
+  languageViews.forEach(view => { view.hidden = view.dataset.language !== language; });
+  languageButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.setLanguage === language)));
+  document.documentElement.lang = language;
+  document.title = languageMeta[language].title;
+  document.querySelector('meta[name="description"]').content = languageMeta[language].description;
+  if (persist) { try { localStorage.setItem('agora-analytics-language', language); } catch (_) {} }
+  const url = new URL(location.href);
+  if (language === 'en') url.searchParams.set('lang', 'en'); else url.searchParams.delete('lang');
+  const baseHash = url.hash.slice(1).replace(/^en-/, '');
+  if (baseHash) url.hash = '#' + (language === 'en' ? 'en-' : '') + baseHash;
+  if (historyMode) {
+    try { history[historyMode + 'State']({language}, '', url); } catch (_) {}
+  }
+  updateNav();
+  if (focusControl) nextView?.querySelector(`[data-set-language="${language}"]`)?.focus();
+}
+languageButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.setLanguage, {historyMode:'push', focusControl:true})));
+const requestedLanguage = new URLSearchParams(location.search).get('lang');
+let savedLanguage = 'ko';
+try { savedLanguage = localStorage.getItem('agora-analytics-language') || 'ko'; } catch (_) {}
+setLanguage(requestedLanguage === 'en' || requestedLanguage === 'ko' ? requestedLanguage : savedLanguage, {persist:false});
+const initialHash = location.hash.slice(1).replace(/^en-/, '');
+if (initialHash) {
+  const visibleLanguage = document.documentElement.lang;
+  const target = document.getElementById((visibleLanguage === 'en' ? 'en-' : '') + initialHash);
+  if (target?.tagName === 'DETAILS') target.open = true;
+  target?.scrollIntoView();
+}
+window.addEventListener('popstate', () => {
+  const language = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ko';
+  setLanguage(language, {persist:false, historyMode:null});
+  const baseHash = location.hash.slice(1).replace(/^en-/, '');
+  const target = document.getElementById((language === 'en' ? 'en-' : '') + baseHash);
+  target?.scrollIntoView();
+});
+</script>'''
+html = html[:body_start] + '<div data-language="ko">' + ko_body + '</div><div data-language="en" hidden>' + en_body + '</div>' + original_script.replace("document.getElementById('print-page').addEventListener('click', () => window.print());", "document.querySelectorAll('.print').forEach(button => button.addEventListener('click', () => window.print()));").replace("const directTarget = document.getElementById(location.hash.slice(1));", "const directTarget = document.getElementById(location.hash.slice(1));") + language_script + '</body></html>'

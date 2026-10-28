@@ -11,14 +11,15 @@
 
 | 경로 | 역할 |
 | --- | --- |
-| `src/render.py` | 고객용 한국어 HTML의 내용과 마크업 원본 |
+| `src/render.py` | 공통 마크업, 이중 언어 렌더링과 언어 전환 동작 |
+| `src/translations_en.py` | 화면 텍스트와 접근성 레이블의 전체 영어 번역표 |
 | `src/styles/base.css` | 공통 레이아웃과 접근성 스타일 |
 | `src/styles/theme.css` | 색상·타이포그래피·컴포넌트 스타일 |
 | `assets/fonts/PretendardVariable.woff2` | HTML에 포함되는 Pretendard Variable 폰트 |
 | `assets/fonts/OFL.txt` | 폰트 라이선스 고지 |
 | `scripts/build.py` | 원본으로부터 `index.html` 생성 |
 | `scripts/check.py` | 생성 결과와 필수 콘텐츠 검사 |
-| `index.html` | 생성된 고객용 한국어 가이드 |
+| `index.html` | 생성된 한국어·영어 고객용 가이드 |
 | `docs/ko/guide.md` | 한국어 상세 문서 |
 | `docs/en/guide.md` | 영어 상세 문서 |
 
@@ -28,11 +29,11 @@
 
 1. 기능, 가격, 플랜 권한, 보존기간과 API 제한을 공식 문서에서 다시 확인합니다.
 2. 확인일과 변경 근거를 정리하고, 문서가 서로 다르면 하나를 임의로 확정하지 않습니다.
-3. 고객용 화면의 원본인 `src/render.py`와 필요한 CSS를 수정합니다.
+3. `src/render.py`, `src/translations_en.py`와 필요한 CSS를 수정합니다. 화면에 표시되는 한국어의 영어 번역이 빠지면 빌드가 실패합니다.
 4. `docs/ko/guide.md`와 `docs/en/guide.md`에 같은 사실과 주의사항을 반영합니다.
 5. 한국어·영어 문서를 문장 단위로 직역하기보다 의미, 숫자, 조건과 링크가 같은지 대조합니다.
 6. HTML을 다시 생성하고 검사합니다.
-7. 로컬 브라우저에서 데스크톱, 모바일, 키보드 탐색과 인쇄 화면을 확인합니다.
+7. 기본 URL과 `?lang=en`에서 두 언어의 데스크톱, 모바일, 키보드 탐색, 언어 저장, 바로가기와 인쇄 화면을 확인합니다.
 8. 변경 사항과 검증 결과를 Pull Request에 기록합니다.
 
 ## 공식 자료 검증

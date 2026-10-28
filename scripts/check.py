@@ -19,14 +19,40 @@ class GuideParser(HTMLParser):
         self.lang = None
         self.external_assets: list[str] = []
         self.retention_rows: list[list[str]] = []
+        self.retention_rows_by_language: dict[str, list[list[str]]] = {"ko": [], "en": []}
+        self._retention_language: str | None = None
         self._in_retention = False
         self._row: list[str] = []
         self._cell: str | None = None
+        self.language_views: list[str] = []
+        self.language_text: dict[str, list[str]] = {"ko": [], "en": []}
+        self._language: str | None = None
+        self._language_div_depth = 0
+        self.language_buttons: set[str] = set()
+        self.language_structure = {"ko": {"section": 0, "details": 0, "table": 0, "tabs": 0, "plans": 0},
+                                   "en": {"section": 0, "details": 0, "table": 0, "tabs": 0, "plans": 0}}
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
-        if tag == "table" and "retention-matrix" in (values.get("class") or "").split():
+        if values.get("data-language") in self.language_text:
+            self._language = values["data-language"]
+            self._language_div_depth = 1
+            self.language_views.append(self._language)
+        elif self._language and tag == "div":
+            self._language_div_depth += 1
+        if values.get("data-set-language"):
+            self.language_buttons.add(values["data-set-language"])
+        if self._language:
+            classes = (values.get("class") or "").split()
+            if tag in ("section", "details", "table"):
+                self.language_structure[self._language][tag] += 1
+            if values.get("data-job"):
+                self.language_structure[self._language]["tabs"] += 1
+            if "plan" in classes:
+                self.language_structure[self._language]["plans"] += 1
+        if self._language and tag == "table" and "retention-matrix" in (values.get("class") or "").split():
             self._in_retention = True
+            self._retention_language = self._language
         if self._in_retention:
             if tag == "tr":
                 self._row = []
@@ -45,19 +71,29 @@ class GuideParser(HTMLParser):
                 self.external_assets.append(asset)
 
     def handle_data(self, data: str) -> None:
+        if self._language:
+            self.language_text[self._language].append(data)
         if self._cell is not None:
             self._cell += data
 
     def handle_endtag(self, tag: str) -> None:
+        if self._language and tag == "div":
+            self._language_div_depth -= 1
+            if self._language_div_depth == 0:
+                self._language = None
         if not self._in_retention:
             return
         if tag in ("th", "td") and self._cell is not None:
             self._row.append(self._cell.strip())
             self._cell = None
         elif tag == "tr":
-            self.retention_rows.append(self._row)
+            if self._retention_language:
+                self.retention_rows_by_language[self._retention_language].append(self._row)
+                if self._retention_language == "ko":
+                    self.retention_rows.append(self._row)
         elif tag == "table":
             self._in_retention = False
+            self._retention_language = None
 
 
 def numeric_cell(value: str) -> str | None:
@@ -107,6 +143,40 @@ def main() -> int:
     parser.feed(html)
     if parser.lang != "ko":
         errors.append("The customer HTML must identify its Korean language.")
+    if parser.language_views != ["ko", "en"]:
+        errors.append("The HTML must contain complete Korean and English language views.")
+    if parser.language_buttons != {"ko", "en"}:
+        errors.append("The header must provide Korean and English language controls.")
+    if parser.language_structure["ko"] != parser.language_structure["en"]:
+        errors.append(f"Korean and English UI structure differs: {parser.language_structure}")
+    ko_retention = [[numeric_cell(cell) for cell in row[1:]] for row in parser.retention_rows_by_language["ko"]]
+    en_retention = [[numeric_cell(cell) for cell in row[1:]] for row in parser.retention_rows_by_language["en"]]
+    if not ko_retention or ko_retention != en_retention:
+        errors.append("Korean and English HTML retention values differ.")
+    english_text = " ".join(parser.language_text["en"])
+    if re.search(r"[가-힣]", english_text):
+        errors.append("The English view contains untranslated Korean text.")
+    english_markup = html.split('<div data-language="en" hidden>', 1)[1].split('</div><script>', 1)[0]
+    joined_inline = re.findall(r"[A-Za-z0-9]</(?:b|code|span)>[A-Za-z0-9]", english_markup)
+    if joined_inline:
+        errors.append(f"English inline content is missing word boundaries: {joined_inline[:5]}")
+    if "1<span class=\"duration-unit\"> day</span>" not in english_markup:
+        errors.append("English singular retention must use '1 day'.")
+    for required_text in (
+        "Compare retention and query periods",
+        "How long is data available?",
+        "Connect to Datadog and business systems",
+        "Service conditions to confirm before implementation",
+    ):
+        if required_text not in english_text:
+            errors.append(f"The English view is missing required content: {required_text}")
+    if "searchParams.set('lang', 'en')" not in html or "localStorage" not in html:
+        errors.append("Language selection must support ?lang=en and persist locally.")
+    if "window.addEventListener('popstate'" not in html or "url.hash = '#' +" not in html:
+        errors.append("Language selection must remap anchors and handle browser history.")
+    for required_value in ("$449", "$999", "$1,599", "3 days", "7 days", "14 days", "30 days", "60-day retention", "90-day retention"):
+        if required_value not in english_text:
+            errors.append(f"The English view is missing a plan or retention value: {required_value}")
     if len(parser.ids) != len(set(parser.ids)):
         errors.append("The HTML contains duplicate element IDs.")
     for fragment in parser.fragments:

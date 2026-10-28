@@ -11,14 +11,15 @@ Use this process to keep the customer-facing HTML and the Korean and English Mar
 
 | Path | Purpose |
 | --- | --- |
-| `src/render.py` | Source content and markup for the Korean customer HTML |
+| `src/render.py` | Shared markup, bilingual rendering, and language switching behavior |
+| `src/translations_en.py` | Complete English translation map for visible Korean text and accessibility labels |
 | `src/styles/base.css` | Shared layout and accessibility styles |
 | `src/styles/theme.css` | Color, typography, and component styles |
 | `assets/fonts/PretendardVariable.woff2` | Pretendard Variable font embedded in the HTML |
 | `assets/fonts/OFL.txt` | Font license notice |
 | `scripts/build.py` | Generates `index.html` from source files |
 | `scripts/check.py` | Checks generated output and required content |
-| `index.html` | Generated Korean customer guide |
+| `index.html` | Generated bilingual customer guide |
 | `docs/ko/guide.md` | Detailed Korean reference |
 | `docs/en/guide.md` | Detailed English reference |
 
@@ -28,11 +29,11 @@ Do not edit `index.html` directly. Update `src/` and rebuild so that the output 
 
 1. Recheck features, prices, plan entitlements, retention, and API limits in official documentation.
 2. Record the verification date and evidence. If official pages disagree, do not resolve the conflict by assumption.
-3. Update `src/render.py` and the relevant CSS files.
+3. Update `src/render.py`, `src/translations_en.py`, and the relevant CSS files. The build fails when visible Korean text has no English translation.
 4. Apply the same facts and limitations to `docs/ko/guide.md` and `docs/en/guide.md`.
 5. Compare meaning, numbers, conditions, and links across languages instead of translating sentence by sentence.
 6. Regenerate and check the HTML.
-7. Review desktop, mobile, keyboard navigation, and print output in a local browser.
+7. Review both languages at the default URL and `?lang=en`, including desktop, mobile, keyboard navigation, language persistence, deep links, and print output.
 8. Record the change and validation results in the pull request.
 
 ## Source audit
